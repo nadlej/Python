@@ -9,8 +9,8 @@ def TwoEleven(x):
     print(word)
 
 def TwoTwelve(x, n):
-    print(x[0:n])
-    print(x[-n:])
+    print(''.join(word[0] for word in x.split()))
+    print(''.join(word[-1] for word in x.split()))
 
 def TwoThirteen(x):
     words = x.split()
