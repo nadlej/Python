@@ -57,7 +57,8 @@ Należy zbudować pełny string, a potem go wypisać.
 '''
 
 def ThreeFive():
-    n = int(input('5. Length: '))
+    print('5. ')
+    n = 12
     str1 = str2 = ''
     str1 += '|'
 
@@ -85,8 +86,9 @@ Napisać program rysujący prostokąt zbudowany z małych kratek. Należy zbudow
 '''
 
 def ThreeSix():
-    x = int(input("6. Put x variable: "))
-    y = int(input("Put y variable: "))
+    print('6. ')
+    x = 4
+    y = 2
 
     xline = "+"
     xline += "---+" * x
