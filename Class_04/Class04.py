@@ -109,6 +109,8 @@ def odwracanieA(L, left, right):
 
 
 def odwracanieB(L, left, right):
+    assert left <= right
+
     if left > right:
         return L
     else:
