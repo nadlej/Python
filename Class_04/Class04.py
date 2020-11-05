@@ -1,11 +1,11 @@
-
-
 """
 Rozwiązania zadań 3.5 i 3.6 z poprzedniego zestawu zapisać w postaci funkcji, które zwracają pełny string przez return.
 """
 
 
 def FourTwoA(x):
+    assert x > 0
+
     n = x
     str1 = str2 = ''
     str1 += '|'
@@ -31,6 +31,8 @@ def FourTwoA(x):
 
 
 def FourTwoB(x, y):
+    assert x, y > 0
+
     xline = "+"
     xline += "---+" * x
     yline = "|"
@@ -49,6 +51,8 @@ Napisać iteracyjną wersję funkcji factorial(n) obliczającej silnię.
 
 
 def factorial(n):
+    assert n >= 0
+
     fact = 1
     if n == 0 | n == 1:
         return fact
@@ -64,6 +68,8 @@ Napisać iteracyjną wersję funkcji fibonacci(n) obliczającej n-ty wyraz ciąg
 
 
 def fibonacci(n):
+    assert n >= 0
+
     if n == 0:
         return 0
     elif n == 1:
@@ -88,6 +94,8 @@ Napisać funkcję odwracanie(L, left, right) odwracającą kolejność elementó
 
 
 def odwracanieA(L, left, right):
+    assert left <= right
+
     i = (right - left) / 2
 
     while i > 0:
@@ -142,22 +150,23 @@ def flatten(sequence):
 
     return L
 
+
 def test():
     print('4.2')
     print(FourTwoA(12))
-    print(FourTwoB(4,4))
+    print(FourTwoB(4, 4))
     print('4.3')
     print(factorial(6))
     print('4.4')
     print(fibonacci(12))
     print('4.5')
-    L = [0,1,2,3,4,5]
+    L = [0, 1, 2, 3, 4, 5]
     print(L)
-    print(odwracanieA(L,1,4))
-    L = [0,1,2,3,4,5]
+    print(odwracanieA(L, 1, 4))
+    L = [0, 1, 2, 3, 4, 5]
     print(odwracanieB(L, 1, 4))
     print('4.6')
-    L = [1,(2,3),[],[4,(5,6,7)],8,[9]]
+    L = [1, (2, 3), [], [4, (5, 6, 7)], 8, [9]]
     print(L)
     print(sum_seq(L))
     print('4.7')
