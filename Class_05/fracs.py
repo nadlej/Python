@@ -3,31 +3,17 @@ import unittest
 
 
 def add_frac(frac1, frac2):  # frac1 + frac2
-    nb = []
-    mod = gcd(frac1[1], frac2[1])
+    nb = [frac1[0] * frac2[1] + frac2[0] * frac1[1], frac1[1] * frac2[1]]
+    mod = gcd(nb[0], nb[1])
 
-    if mod == 1:
-        nb.append(frac1[0] * frac2[1] + frac2[0] * frac1[1])
-        nb.append(frac1[1] * frac2[1])
-    else:
-        nb.append(((frac1[1]) * frac1[0] + (frac2[1]) * frac2[0]) / mod)
-        nb.append(mod)
-
-    return nb
+    return [nb[0] / mod, nb[1] / mod]
 
 
 def sub_frac(frac1, frac2):  # frac1 - frac2
-    nb = []
-    mod = gcd(frac1[1], frac2[1])
+    nb = [frac1[0] * frac2[1] - frac2[0] * frac1[1], frac1[1] * frac2[1]]
+    mod = gcd(nb[0], nb[1])
 
-    if mod == 1:
-        nb.append(frac1[0] * frac2[1] - frac2[0] * frac1[1])
-        nb.append(frac1[1] * frac2[1])
-    else:
-        nb.append(((frac1[1]) * frac1[0] - (frac2[1]) * frac2[0]) / mod)
-        nb.append(mod)
-
-    return nb
+    return [nb[0] / mod, nb[1] / mod]
 
 
 def mul_frac(frac1, frac2):  # frac1 * frac2
@@ -36,10 +22,8 @@ def mul_frac(frac1, frac2):  # frac1 * frac2
     assert nb[1] != 0, 'DIVIDING BY 0'
 
     mod = gcd(nb[0], nb[1])
-    if mod != 1:
-        nb[0], nb[1] = nb[0] / mod, nb[1] / mod
 
-    return nb
+    return [nb[0] / mod, nb[1] / mod]
 
 
 def div_frac(frac1, frac2):  # frac1 / frac2
@@ -48,31 +32,22 @@ def div_frac(frac1, frac2):  # frac1 / frac2
     assert nb[1] != 0,'DIVIDING BY 0'
 
     mod = gcd(nb[0], nb[1])
-    if mod != 1:
-        nb[0], nb[1] = nb[0] / mod, nb[1] / mod
 
-    return nb
+    return [nb[0] / mod, nb[1] / mod]
 
 
 def is_positive(frac):  # bool, czy dodatni
-    if frac[0] * frac[1] > 0:
-        return True
-    else:
-        return False
+    return frac[0] * frac[1] > 0
 
 
 def is_zero(frac):  # bool, typu [0, x]
-    if frac[0] == 0:
-        return True
-    else:
-        return False
+    return frac[0] == 0
 
 
 def cmp_frac(frac1, frac2):  # -1 | 0 | +1
-    f, s = frac1[0] * frac2[1], frac2[0] * frac1[1]
-    if f > s:
+    if frac2float(frac1) > frac2float(frac2):
         return -1
-    elif f < s:
+    elif frac2float(frac1) < frac2float(frac2):
         return 1
     else:
         return 0
@@ -95,11 +70,11 @@ class TestFractions(unittest.TestCase):
         self.zero = [0, 1]
 
     def test_add_frac(self):
-        self.assertEqual(add_frac([1, 2], [1, 3]), [5, 6])
+        self.assertEqual(add_frac([3, 6], [1, 3]), [5, 6])
         self.assertEqual(add_frac([0, 1], [1, 3]), [1, 3])
 
     def test_sub_frac(self):
-        self.assertEqual(sub_frac([1, 2], [1, 3]), [1, 6])
+        self.assertEqual(sub_frac([3, 6], [1, 3]), [1, 6])
         self.assertEqual(sub_frac([0, 1], [1, 3]), [-1, 3])
 
     def test_mul_frac(self):
