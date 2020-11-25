@@ -37,6 +37,9 @@ class Point:
     def length(self):          # długość wektora
         return math.sqrt(self.x**2 + self.y**2)
 
+    def __hash__(self):
+        return hash((self.x, self.y))  # bazujemy na tuple, immutable points
+
 # Kod testujący moduł.
 
 class TestPoint(unittest.TestCase):
