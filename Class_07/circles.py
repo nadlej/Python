@@ -100,6 +100,9 @@ class TestCircle(unittest.TestCase):
         self.c3 = Circle(0, 0, 5)
         self.c4 = Circle(-2, 5, 8)
 
+    def test_repr(self):
+        self.assertEqual(self.c2.__repr__(), "Circle(0, 0, 10)")
+
     def test_equal(self):
         self.assertFalse(self.c1 == self.c2)
         self.assertTrue(self.c1 == Circle(5, 5, 5))
