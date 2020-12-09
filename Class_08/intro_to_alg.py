@@ -106,9 +106,11 @@ class Test(unittest.TestCase):
         self.assertRaises(ValueError, heron, 50, 1, 2)
 
     def test_P_recursion(self):
+        self.assertEqual(P_recursion(2, 2), 0.5)
         self.assertEqual(P_recursion(2, 3), 0.6875)
 
     def test_P_dynamic(self):
+        self.assertEqual(P_dynamic(2, 2), 0.5)
         self.assertEqual(P_dynamic(2, 3), 0.6875)
 
 
