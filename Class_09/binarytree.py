@@ -13,12 +13,6 @@ class Node:
         return str(self.data)
 
 
-def btree_count(top):
-    if top is None:
-        return 0
-    return btree_count(top.left) + 1 + btree_count(top.right)
-
-
 def count_leafs(top):
     if top.data is None:
         return 0
@@ -29,9 +23,9 @@ def count_leafs(top):
 
 
 def count_total(top):
-    if top.data is None:
+    if top is None:
         return 0
-    return btree_count(top.left) + 1 + btree_count(top.right)
+    return count_total(top.left) + top.data + count_total(top.right)
 
 
 class Test(unittest.TestCase):
@@ -52,9 +46,8 @@ class Test(unittest.TestCase):
         self.assertEqual(count_leafs(self.root2), 0)
 
     def testTotal(self):
-        self.assertEqual(count_total(self.root), 7)
+        self.assertEqual(count_total(self.root), 28)
         self.assertEqual(count_total(self.root1), 1)
-        self.assertEqual(count_total(self.root2), 0)
 
 
 if __name__ == '__main__':
