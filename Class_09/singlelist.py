@@ -62,16 +62,16 @@ class SingleList:
         if self.is_empty() is None:
             raise ValueError('pusta lista')
         elif self.count() == 1:
-            node = self.tail
-            self.head = None
+            node = self.head
+            self.head = self.tail = None
+            self.length -= 1
             return node
         else:
             node = self.head
-            while node.next.next is not None:
+            r_tail = self.tail
+            while node.next is not self.tail:
                 node = node.next
 
-            r_tail = node.next
-            node.next = None
             self.tail = node
             self.length -= 1
 
@@ -86,12 +86,14 @@ class SingleList:
             self.head = other.head
             self.tail = other.tail
             self.length = other.length
-            other.head = None
+            other.head = other.tail = None
+            other.length = 0
         else:
             self.tail.next = other.head
             self.tail = other.tail
             self.length += other.length
-            other.head = None
+            other.head = other.tail = None
+            other.length = 0
 
     # czyszczenie listy
 
@@ -127,6 +129,7 @@ class Test(unittest.TestCase):
         self.clist.merge(self.alist)
         self.assertEqual(self.clist.count(), 4)
         self.assertEqual(self.clist.remove_tail().data, 44)
+        self.assertEqual(self.clist.remove_tail().data, 33)
 
     def testClear(self):
         self.clist.clear()
