@@ -124,36 +124,26 @@ class Graph:
         return edge.weight
 
     def iternodes(self):  # iterator po wierzchołkach
-        return [i for i in range(0, self.n)]
+        for node in range(self.n):
+            yield node
 
     def iteradjacent(self, node):  # iterator po wierzchołkach sąsiednich
-        return self.adj[node]
+        for node in self.adj[node]:
+            yield node
 
     def iteroutedges(self, node):  # iterator po krawędziach wychodzących
-        edges = ""
         for i in self.adj[node]:
-            new_edge = Edge(node, i)
-            edges += new_edge.__repr__() + '\n'
-        return edges
+            yield Edge(node, i)
 
     def iterinedges(self, node):  # iterator po krawędziach przychodzących
-        edges = ""
-
         for k in self.adj:
             if node in k:
-                new_edge = Edge(self.adj.index(k), node)
-                edges += new_edge.__repr__() + '\n'
-
-        return edges
+                yield Edge(self.adj.index(k), node)
 
     def iteredges(self):  # iterator po krawędziach
-        edges = ""
         for i in range(0, self.n):
             for k in self.adj[i]:
-                new_edge = Edge(i, k)
-                edges += new_edge.__repr__() + '\n'
-
-        return edges
+                yield Edge(i, k)
 
     def copy(self):  # zwraca kopię grafu
         return copy.deepcopy(self)
@@ -174,10 +164,7 @@ class Graph:
             return new_graph
 
     def complement(self):  # zwraca dopełnienie grafu
-        new_graph = self.copy()
-
-        for i in range(0, self.n):  # czyścimy listy krawędzi w nowym grafie
-            new_graph.adj[i].clear()
+        new_graph = Graph(self.n, directed=self.is_directed())
 
         if self.is_directed() is True:  # tworzymy wszystkie nowe połaczenia, ktore nie pojawiły się wcześniej
             for i in range(0, self.n):
@@ -186,9 +173,9 @@ class Graph:
                         new_edge = Edge(i, j)
                         new_graph.add_edge(new_edge)
         else:
-            for i in range(0, ceil(self.n / 2)):
+            for i in range(0, self.n):
                 for j in range(0, self.n):
-                    if j not in self.adj[i]:
+                    if j not in self.adj[i] and i not in self.adj[j]:
                         new_edge = Edge(i, j)
                         new_graph.add_edge(new_edge)
 
@@ -196,7 +183,6 @@ class Graph:
 
     def subgraph(self, nodes):  # zwraca podgraf indukowany
         new_graph = Graph(self.n, self.directed)
-        nodes_copy = nodes.copy()
 
         if self.is_directed() is True:
             for i in nodes:
@@ -206,12 +192,10 @@ class Graph:
                         new_graph.add_edge(new_edge)
         else:
             for i in nodes:
-                if i in nodes_copy:
-                    for target in self.adj[i]:  # sprawdzamy, czy wierzchołek źródłowy i jego cel znajdują się w liście
-                        if target in nodes:
-                            new_edge = Edge(i, target)
-                            new_graph.add_edge(new_edge)
-                            nodes_copy.remove(target)
+                for target in self.adj[i]:  # sprawdzamy, czy wierzchołek źródłowy i jego cel znajdują się w liście
+                    if target in nodes and i not in new_graph.adj[target]:
+                        new_edge = Edge(i, target)
+                        new_graph.add_edge(new_edge)
 
         return new_graph
 
@@ -296,10 +280,12 @@ class Tests(unittest.TestCase):
         self.graph.add_edge(Edge(0, 1))
 
     def testIterations(self):
-        self.assertEqual(self.graph.iternodes(), [0, 1, 2, 3, 4])
-        self.assertEqual(self.graph.iteradjacent(2), [0])
-        self.assertEqual(self.graph.iteroutedges(0), "Edge(0, 1)\nEdge(0, 3)\n")
-        self.assertEqual(self.graph.iterinedges(1), "Edge(0, 1)\nEdge(3, 1)\n")
+        self.assertEqual(list(self.graph.iternodes()), [0, 1, 2, 3, 4])
+        self.assertEqual(list(self.graph.iteradjacent(2)), [0])
+        self.assertEqual([k.__repr__() for k in self.graph.iteroutedges(0)], [k.__repr__() for k in
+                                                                              [Edge(0, 1), Edge(0, 3)]])
+        self.assertEqual([k.__repr__() for k in self.graph.iterinedges(1)], [k.__repr__() for k in
+                                                                             [Edge(0, 1), Edge(3, 1)]])
         self.assertEqual(self.graph.DFS(3), [3, 1, 4, 2, 0])
         self.assertEqual(self.graph.BFS(0), [0, 1, 3, 4, 2])
 
@@ -315,7 +301,8 @@ class Tests(unittest.TestCase):
         self.assertEqual(self.graph_c.has_edge(Edge(0, 3)), False)
 
         self.graph_d = self.graph.subgraph([0, 1, 3])
-        self.assertEqual(self.graph_d.iteredges(), "Edge(0, 1)\nEdge(0, 3)\nEdge(3, 1)\n")
+        self.assertEqual([k.__repr__() for k in self.graph_d.iteredges()], [k.__repr__() for k in
+                                                                            [Edge(0, 1), Edge(0, 3), Edge(3, 1)]])
 
     def testCount2(self):
         self.assertEqual(self.undirected_graph.is_directed(), False)
@@ -337,10 +324,12 @@ class Tests(unittest.TestCase):
         self.undirected_graph.add_edge(Edge(1, 2))
 
     def testIterations2(self):
-        self.assertEqual(self.undirected_graph.iternodes(), [0, 1, 2])
-        self.assertEqual(self.undirected_graph.iteradjacent(2), [0, 1])
-        self.assertEqual(self.undirected_graph.iteroutedges(0), "Edge(0, 1)\nEdge(0, 2)\n")
-        self.assertEqual(self.undirected_graph.iterinedges(1), "Edge(0, 1)\nEdge(2, 1)\n")
+        self.assertEqual(list(self.undirected_graph.iternodes()), [0, 1, 2])
+        self.assertEqual(list(self.undirected_graph.iteradjacent(2)), [0, 1])
+        self.assertEqual([k.__repr__() for k in self.undirected_graph.iteroutedges(0)], [k.__repr__() for k in
+                                                                                         [Edge(0, 1), Edge(0, 2)]])
+        self.assertEqual([k.__repr__() for k in self.undirected_graph.iterinedges(1)], [k.__repr__() for k in
+                                                                                        [Edge(0, 1), Edge(2, 1)]])
 
     def testOther2(self):
         self.undirected_graph_b = self.undirected_graph.transpose()
@@ -355,7 +344,8 @@ class Tests(unittest.TestCase):
         self.assertEqual(self.undirected_graph_c.has_edge(Edge(0, 2)), False)
 
         self.undirected_graph_d = self.undirected_graph.subgraph([0, 1])
-        self.assertEqual(self.undirected_graph_d.iteredges(), "Edge(0, 1)\nEdge(1, 0)\n")
+        self.assertEqual([k.__repr__() for k in self.undirected_graph_d.iteredges()], [k.__repr__() for k in
+                                                                                       [Edge(0, 1), Edge(1, 0)]])
 
 
 if __name__ == '__main__':
