@@ -94,7 +94,7 @@ class Graph:
                     vector.remove(node)
 
     def add_edge(self, edge):  # wstawienie krawędzi
-        assert edge.source < self.n and edge.target < self.n, "vector out of max"
+        assert (self.n > edge.source and self.n > edge.target) and edge.target != edge.source and edge.target not in self.adj[edge.source]
         if self.is_directed():  # dodajemy krawedz do listy danego wierzcholka
             self.adj[edge.source].append(edge.target)
             self.edges_count += 1
@@ -141,9 +141,15 @@ class Graph:
                 yield Edge(self.adj.index(k), node)
 
     def iteredges(self):  # iterator po krawędziach
-        for i in range(0, self.n):
-            for k in self.adj[i]:
-                yield Edge(i, k)
+        if self.is_directed():
+            for i in range(0, self.n):
+                for k in self.adj[i]:
+                    yield Edge(i, k)
+        else:
+            for i in range(0, self.n):
+                for k in self.adj[i]:
+                    if i < k:
+                        yield Edge(i, k)
 
     def copy(self):  # zwraca kopię grafu
         return copy.deepcopy(self)
@@ -151,7 +157,7 @@ class Graph:
     def transpose(self):  # zwraca graf transponowany
         new_graph = self.copy()
 
-        if self.is_directed() is True:  # usuwamy wszystkie krawedzie z nowego grafu
+        if self.is_directed():  # usuwamy wszystkie krawedzie z nowego grafu
             for k in new_graph.adj:
                 k.clear()
 
@@ -166,16 +172,16 @@ class Graph:
     def complement(self):  # zwraca dopełnienie grafu
         new_graph = Graph(self.n, directed=self.is_directed())
 
-        if self.is_directed() is True:  # tworzymy wszystkie nowe połaczenia, ktore nie pojawiły się wcześniej
+        if self.is_directed():  # tworzymy wszystkie nowe połaczenia, ktore nie pojawiły się wcześniej
             for i in range(0, self.n):
                 for j in range(0, self.n):
-                    if j not in self.adj[i]:
+                    if j not in self.adj[i] and i != j:
                         new_edge = Edge(i, j)
                         new_graph.add_edge(new_edge)
         else:
             for i in range(0, self.n):
-                for j in range(0, self.n):
-                    if j not in self.adj[i] and i not in self.adj[j]:
+                for j in range(i+1, self.n):
+                    if j not in self.adj[i] and i not in self.adj[j] and i != j:
                         new_edge = Edge(i, j)
                         new_graph.add_edge(new_edge)
 
@@ -184,7 +190,7 @@ class Graph:
     def subgraph(self, nodes):  # zwraca podgraf indukowany
         new_graph = Graph(self.n, self.directed)
 
-        if self.is_directed() is True:
+        if self.is_directed():
             for i in nodes:
                 for target in self.adj[i]:  # sprawdzamy, czy wierzchołek źródłowy i jego cel znajdują się w liście
                     if target in nodes:
@@ -193,14 +199,14 @@ class Graph:
         else:
             for i in nodes:
                 for target in self.adj[i]:  # sprawdzamy, czy wierzchołek źródłowy i jego cel znajdują się w liście
-                    if target in nodes and i not in new_graph.adj[target]:
+                    if target in nodes and i not in new_graph.adj[target] and i != target:
                         new_edge = Edge(i, target)
                         new_graph.add_edge(new_edge)
 
         return new_graph
 
     def DFS(self, v):  # Przejście grafu DFS od podanego wierzchołka
-        assert 0 <= v < self.n and self.is_directed() is True
+        assert 0 <= v < self.n and self.is_directed()
 
         self.getDFS.clear()  # czyścimy, jeżeli wcześniej była używana
         visited = [False] * self.n  # tablica odwiedzonych wierzchołków
@@ -217,7 +223,7 @@ class Graph:
                 self.DFSRecursion(target, visited)
 
     def BFS(self, v):  # przejście grafu BFS od podanego wierzchołka
-        assert 0 <= v < self.n and self.is_directed() is True
+        assert 0 <= v < self.n and self.is_directed()
         self.getBFS.clear()
 
         visited = [False] * self.n  # tablica odwiedzonych wierzchołków
@@ -295,8 +301,8 @@ class Tests(unittest.TestCase):
         self.assertEqual(self.graph_b.has_edge(Edge(1, 3)), True)
 
         self.graph_c = self.graph.complement()
-        self.assertEqual(self.graph_c.has_edge(Edge(0, 0)), True)
-        self.assertEqual(self.graph_c.has_edge(Edge(1, 1)), True)
+        self.assertEqual(self.graph_c.has_edge(Edge(0, 0)), False)
+        self.assertEqual(self.graph_c.has_edge(Edge(1, 1)), False)
         self.assertEqual(self.graph_c.has_edge(Edge(0, 4)), True)
         self.assertEqual(self.graph_c.has_edge(Edge(0, 3)), False)
 
@@ -345,7 +351,7 @@ class Tests(unittest.TestCase):
 
         self.undirected_graph_d = self.undirected_graph.subgraph([0, 1])
         self.assertEqual([k.__repr__() for k in self.undirected_graph_d.iteredges()], [k.__repr__() for k in
-                                                                                       [Edge(0, 1), Edge(1, 0)]])
+                                                                                       [Edge(0, 1)]])
 
 
 if __name__ == '__main__':
