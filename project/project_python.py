@@ -199,7 +199,7 @@ class Graph:
         else:
             for i in nodes:
                 for target in self.adj[i]:  # sprawdzamy, czy wierzchołek źródłowy i jego cel znajdują się w liście
-                    if target in nodes and i not in new_graph.adj[target] and i != target:
+                    if target in nodes and i not in new_graph.adj[target]:
                         new_edge = Edge(i, target)
                         new_graph.add_edge(new_edge)
 
